@@ -11,16 +11,7 @@ CREATE TABLE IF NOT EXISTS public.schools (
 -- Enable RLS
 ALTER TABLE public.schools ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies for schools (users can see the school they belong to)
-CREATE POLICY "Users can view their school"
-  ON public.schools FOR SELECT
-  USING (
-    id IN (
-      SELECT school_id FROM public.profiles WHERE id = auth.uid()
-    )
-  );
-
--- Create profiles table
+-- Create profiles table (BEFORE schools policies since they reference it)
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   full_name TEXT,
@@ -48,6 +39,15 @@ CREATE POLICY "School admins can view all profiles in their school"
   USING (
     school_id IN (
       SELECT school_id FROM public.profiles WHERE id = auth.uid() AND role IN ('super_admin', 'school_admin')
+    )
+  );
+
+-- RLS Policies for schools (users can see the school they belong to)
+CREATE POLICY "Users can view their school"
+  ON public.schools FOR SELECT
+  USING (
+    id IN (
+      SELECT school_id FROM public.profiles WHERE id = auth.uid()
     )
   );
 
