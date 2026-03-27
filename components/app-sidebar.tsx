@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { LogOut, LayoutDashboard, BookOpen, Users, User, Calendar, DollarSign } from 'lucide-react'
+import { LogOut, LayoutDashboard, BookOpen, Users, User, Calendar, DollarSign, PenTool } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
@@ -70,6 +70,18 @@ export function AppSidebar() {
           icon={<DollarSign className="w-4 h-4" />}
           label="Fee Structures"
           active={pathname.startsWith('/fees')}
+        />
+        <NavLink
+          href="/dashboard/subjects"
+          icon={<PenTool className="w-4 h-4" />}
+          label="Subjects"
+          active={pathname.startsWith('/dashboard/subjects')}
+        />
+        <NavLink
+          href="/dashboard/exams"
+          icon={<PenTool className="w-4 h-4" />}
+          label="Exams"
+          active={pathname.startsWith('/dashboard/exams')}
         />
       </nav>
 

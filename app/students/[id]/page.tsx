@@ -5,6 +5,7 @@ import StudentDeleteButton from '@/components/student-delete-button'
 import GuardianForm from '@/components/guardian-form'
 import { StudentAttendanceTab } from '@/components/student-attendance-tab'
 import { StudentFeesTab } from '@/components/student-fees-tab'
+import { StudentResultsTab } from '@/components/student-results-tab'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -204,6 +205,7 @@ export default function StudentDetailPage({
           <TabsTrigger value="academic">Academic</TabsTrigger>
           <TabsTrigger value="attendance">Attendance</TabsTrigger>
           <TabsTrigger value="fees">Fees</TabsTrigger>
+          <TabsTrigger value="results">Results</TabsTrigger>
           <TabsTrigger value="guardians">Guardians</TabsTrigger>
         </TabsList>
 
@@ -303,6 +305,10 @@ export default function StudentDetailPage({
 
         <TabsContent value="fees" className="space-y-6">
           <StudentFeesTab studentId={student.id} />
+        </TabsContent>
+
+        <TabsContent value="results" className="space-y-6">
+          <StudentResultsTab studentId={student.id} />
         </TabsContent>
 
         <TabsContent value="guardians" className="space-y-6">
