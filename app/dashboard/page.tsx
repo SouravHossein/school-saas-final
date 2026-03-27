@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { Users, BookOpen, BarChart3, User } from 'lucide-react'
+import { Users, BookOpen, BarChart3, User, Calendar } from 'lucide-react'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -40,9 +40,19 @@ export default async function DashboardPage() {
     .select('id')
     .eq('school_id', profile?.school_id)
 
+  // Get today's attendance stats
+  const today = new Date().toISOString().split('T')[0]
+  const { data: todayAttendance } = await supabase
+    .from('attendance')
+    .select('id, status')
+    .eq('school_id', profile?.school_id)
+    .eq('attendance_date', today)
+
   const classCount = classesData?.length || 0
   const sectionCount = sectionsData?.length || 0
   const studentCount = studentsData?.length || 0
+  const presentToday = todayAttendance?.filter((a) => a.status === 'present').length || 0
+  const absentToday = todayAttendance?.filter((a) => a.status === 'absent').length || 0
 
   return (
     <div className="space-y-8">
@@ -55,7 +65,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <StatsCard
           title="Classes"
           value={classCount}
@@ -75,10 +85,16 @@ export default async function DashboardPage() {
           icon={<User className="w-8 h-8" />}
         />
         <StatsCard
-          title="School"
-          value={profile?.schools ? '1' : '0'}
-          description="Active schools"
-          icon={<BarChart3 className="w-8 h-8" />}
+          title="Present Today"
+          value={presentToday}
+          description="Students present today"
+          icon={<Calendar className="w-8 h-8 text-green-600" />}
+        />
+        <StatsCard
+          title="Absent Today"
+          value={absentToday}
+          description="Students absent today"
+          icon={<Calendar className="w-8 h-8 text-red-600" />}
         />
       </div>
 
@@ -106,6 +122,12 @@ export default async function DashboardPage() {
               <Button variant="outline" className="w-full justify-start">
                 <User className="w-4 h-4 mr-2" />
                 Add New Student
+              </Button>
+            </Link>
+            <Link href="/dashboard/attendance">
+              <Button variant="outline" className="w-full justify-start">
+                <Calendar className="w-4 h-4 mr-2" />
+                Mark Attendance
               </Button>
             </Link>
           </div>
