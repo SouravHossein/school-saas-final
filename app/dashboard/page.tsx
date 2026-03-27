@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { Users, BookOpen, BarChart3 } from 'lucide-react'
+import { Users, BookOpen, BarChart3, User } from 'lucide-react'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -35,8 +35,14 @@ export default async function DashboardPage() {
     .select('id')
     .eq('school_id', profile?.school_id)
 
+  const { data: studentsData } = await supabase
+    .from('students')
+    .select('id')
+    .eq('school_id', profile?.school_id)
+
   const classCount = classesData?.length || 0
   const sectionCount = sectionsData?.length || 0
+  const studentCount = studentsData?.length || 0
 
   return (
     <div className="space-y-8">
@@ -49,7 +55,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <StatsCard
           title="Classes"
           value={classCount}
@@ -63,9 +69,15 @@ export default async function DashboardPage() {
           icon={<Users className="w-8 h-8" />}
         />
         <StatsCard
-          title="Users"
+          title="Students"
+          value={studentCount}
+          description="Total students enrolled"
+          icon={<User className="w-8 h-8" />}
+        />
+        <StatsCard
+          title="School"
           value={profile?.schools ? '1' : '0'}
-          description="Active school admins"
+          description="Active schools"
           icon={<BarChart3 className="w-8 h-8" />}
         />
       </div>
@@ -77,7 +89,7 @@ export default async function DashboardPage() {
           <CardDescription>Manage your school</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link href="/classes/new">
               <Button variant="outline" className="w-full justify-start">
                 <BookOpen className="w-4 h-4 mr-2" />
@@ -88,6 +100,12 @@ export default async function DashboardPage() {
               <Button variant="outline" className="w-full justify-start">
                 <Users className="w-4 h-4 mr-2" />
                 Add New Section
+              </Button>
+            </Link>
+            <Link href="/students/new">
+              <Button variant="outline" className="w-full justify-start">
+                <User className="w-4 h-4 mr-2" />
+                Add New Student
               </Button>
             </Link>
           </div>

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { LogOut, LayoutDashboard, BookOpen, Users } from 'lucide-react'
+import { LogOut, LayoutDashboard, BookOpen, Users, User } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
@@ -46,6 +46,12 @@ export function AppSidebar() {
           icon={<Users className="w-4 h-4" />}
           label="Sections"
           active={isActive('/sections')}
+        />
+        <NavLink
+          href="/students"
+          icon={<User className="w-4 h-4" />}
+          label="Students"
+          active={pathname.startsWith('/students')}
         />
       </nav>
 
