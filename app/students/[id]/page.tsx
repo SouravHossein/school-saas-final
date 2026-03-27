@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import StudentDeleteButton from '@/components/student-delete-button'
 import GuardianForm from '@/components/guardian-form'
 import { StudentAttendanceTab } from '@/components/student-attendance-tab'
+import { StudentFeesTab } from '@/components/student-fees-tab'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -202,6 +203,7 @@ export default function StudentDetailPage({
           <TabsTrigger value="personal">Personal Info</TabsTrigger>
           <TabsTrigger value="academic">Academic</TabsTrigger>
           <TabsTrigger value="attendance">Attendance</TabsTrigger>
+          <TabsTrigger value="fees">Fees</TabsTrigger>
           <TabsTrigger value="guardians">Guardians</TabsTrigger>
         </TabsList>
 
@@ -297,6 +299,10 @@ export default function StudentDetailPage({
 
         <TabsContent value="attendance" className="space-y-6">
           <StudentAttendanceTab studentId={student.id} />
+        </TabsContent>
+
+        <TabsContent value="fees" className="space-y-6">
+          <StudentFeesTab studentId={student.id} />
         </TabsContent>
 
         <TabsContent value="guardians" className="space-y-6">

@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { Users, BookOpen, BarChart3, User, Calendar } from 'lucide-react'
+import { Users, BookOpen, BarChart3, User, Calendar, DollarSign } from 'lucide-react'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -48,11 +48,20 @@ export default async function DashboardPage() {
     .eq('school_id', profile?.school_id)
     .eq('attendance_date', today)
 
+  // Get financial stats
+  const { data: studentFeesData } = await supabase
+    .from('student_fees')
+    .select('amount, amount_paid, status')
+    .eq('school_id', profile?.school_id)
+
   const classCount = classesData?.length || 0
   const sectionCount = sectionsData?.length || 0
   const studentCount = studentsData?.length || 0
   const presentToday = todayAttendance?.filter((a) => a.status === 'present').length || 0
   const absentToday = todayAttendance?.filter((a) => a.status === 'absent').length || 0
+  
+  const totalDue = studentFeesData?.reduce((sum, fee) => sum + fee.amount, 0) || 0
+  const totalCollected = studentFeesData?.reduce((sum, fee) => sum + fee.amount_paid, 0) || 0
 
   return (
     <div className="space-y-8">
@@ -96,6 +105,12 @@ export default async function DashboardPage() {
           description="Students absent today"
           icon={<Calendar className="w-8 h-8 text-red-600" />}
         />
+        <StatsCard
+          title="Collected"
+          value={`$${totalCollected.toFixed(0)}`}
+          description="Total fees collected"
+          icon={<DollarSign className="w-8 h-8 text-green-600" />}
+        />
       </div>
 
       {/* Quick Actions */}
@@ -128,6 +143,12 @@ export default async function DashboardPage() {
               <Button variant="outline" className="w-full justify-start">
                 <Calendar className="w-4 h-4 mr-2" />
                 Mark Attendance
+              </Button>
+            </Link>
+            <Link href="/fees/assign">
+              <Button variant="outline" className="w-full justify-start">
+                <DollarSign className="w-4 h-4 mr-2" />
+                Assign Fees
               </Button>
             </Link>
           </div>
