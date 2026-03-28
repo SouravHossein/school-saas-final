@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { LogOut, LayoutDashboard, BookOpen, Users, User, Calendar, DollarSign, PenTool } from 'lucide-react'
+import { LogOut, LayoutDashboard, BookOpen, Users, User, Calendar, DollarSign, PenTool, Megaphone, MessageCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
@@ -82,6 +82,18 @@ export function AppSidebar() {
           icon={<PenTool className="w-4 h-4" />}
           label="Exams"
           active={pathname.startsWith('/dashboard/exams')}
+        />
+        <NavLink
+          href="/announcements"
+          icon={<Megaphone className="w-4 h-4" />}
+          label="Announcements"
+          active={pathname.startsWith('/announcements')}
+        />
+        <NavLink
+          href="/messages"
+          icon={<MessageCircle className="w-4 h-4" />}
+          label="Messages"
+          active={pathname.startsWith('/messages')}
         />
       </nav>
 

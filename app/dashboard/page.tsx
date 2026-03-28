@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { Users, BookOpen, BarChart3, User, Calendar, DollarSign } from 'lucide-react'
+import { Users, BookOpen, BarChart3, User, Calendar, DollarSign, Megaphone, MessageCircle } from 'lucide-react'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -62,6 +62,21 @@ export default async function DashboardPage() {
   
   const totalDue = studentFeesData?.reduce((sum, fee) => sum + fee.amount, 0) || 0
   const totalCollected = studentFeesData?.reduce((sum, fee) => sum + fee.amount_paid, 0) || 0
+
+  // Get announcements
+  const { data: announcementsData } = await supabase
+    .from('announcements')
+    .select('id, title, priority')
+    .eq('school_id', profile?.school_id)
+    .order('published_at', { ascending: false })
+    .limit(3)
+
+  // Get unread notifications
+  const { data: notificationsData } = await supabase
+    .from('notifications')
+    .select('id')
+    .eq('recipient_id', user.id)
+    .eq('is_read', false)
 
   return (
     <div className="space-y-8">
@@ -151,30 +166,63 @@ export default async function DashboardPage() {
                 Assign Fees
               </Button>
             </Link>
+            <Link href="/announcements/new">
+              <Button variant="outline" className="w-full justify-start">
+                <Megaphone className="w-4 h-4 mr-2" />
+                New Announcement
+              </Button>
+            </Link>
+            <Link href="/messages/new">
+              <Button variant="outline" className="w-full justify-start">
+                <MessageCircle className="w-4 h-4 mr-2" />
+                New Message
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>
 
-      {/* School Info */}
+      {/* Latest Announcements */}
       <Card>
         <CardHeader>
-          <CardTitle>School Information</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Megaphone className="w-5 h-5" />
+            Latest Announcements
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">School Name:</span>
-            <span className="font-medium">{profile?.schools?.name}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Subdomain:</span>
-            <span className="font-medium">{profile?.schools?.subdomain}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Your Role:</span>
-            <span className="font-medium capitalize">{profile?.role}</span>
-          </div>
+        <CardContent>
+          {announcementsData && announcementsData.length > 0 ? (
+            <div className="space-y-3">
+              {announcementsData.map((announcement: any) => (
+                <div key={announcement.id} className="text-sm p-2 bg-muted rounded">
+                  <p className="font-medium">{announcement.title}</p>
+                </div>
+              ))}
+              <Link href="/announcements">
+                <Button variant="link" className="w-full justify-start">
+                  View All Announcements
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">No announcements yet</p>
+          )}
         </CardContent>
       </Card>
+
+      {/* Communication Status */}
+      {notificationsData && notificationsData.length > 0 && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardContent className="pt-6">
+            <p className="text-sm">
+              You have <strong>{notificationsData.length}</strong> unread notifications
+            </p>
+            <Link href="/notifications" className="inline-block mt-2">
+              <Button size="sm">View All</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
