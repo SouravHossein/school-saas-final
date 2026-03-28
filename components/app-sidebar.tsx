@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { LogOut, LayoutDashboard, BookOpen, Users, User, Calendar, DollarSign, PenTool, Megaphone, MessageCircle, Globe } from 'lucide-react'
+import { LogOut, LayoutDashboard, BookOpen, Users, User, Calendar, DollarSign, PenTool, Megaphone, MessageCircle, Globe, BarChart3 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
@@ -101,6 +101,33 @@ export function AppSidebar() {
           label="Website"
           active={pathname.startsWith('/dashboard/website')}
         />
+
+        {/* Analytics Section */}
+        <div className="pt-4 mt-4 border-t border-border">
+          <p className="px-2 mb-2 text-xs font-semibold text-muted-foreground uppercase">Analytics</p>
+          <NavLink
+            href="/dashboard/analytics/finance"
+            icon={<BarChart3 className="w-4 h-4" />}
+            label="Finance Analytics"
+            active={pathname.includes('/analytics/finance')}
+          />
+          <NavLink
+            href="/dashboard/analytics/academics"
+            icon={<BarChart3 className="w-4 h-4" />}
+            label="Academic Analytics"
+            active={pathname.includes('/analytics/academics')}
+          />
+        </div>
+
+        {/* Payments Section */}
+        <div className="pt-4 mt-4 border-t border-border">
+          <NavLink
+            href="/dashboard/payments"
+            icon={<DollarSign className="w-4 h-4" />}
+            label="Payments"
+            active={pathname.startsWith('/dashboard/payments')}
+          />
+        </div>
       </nav>
 
       {/* Logout */}

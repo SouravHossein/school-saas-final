@@ -128,48 +128,61 @@ export default async function DashboardPage() {
         />
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - Role Based */}
       <Card>
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Manage your school</CardDescription>
+          <CardDescription>
+            {profile?.role === 'school_admin'
+              ? 'Manage your school'
+              : profile?.role === 'teacher'
+                ? 'Manage classes and students'
+                : 'View student information'}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Link href="/classes/new">
-              <Button variant="outline" className="w-full justify-start">
-                <BookOpen className="w-4 h-4 mr-2" />
-                Add New Class
-              </Button>
-            </Link>
-            <Link href="/sections/new">
-              <Button variant="outline" className="w-full justify-start">
-                <Users className="w-4 h-4 mr-2" />
-                Add New Section
-              </Button>
-            </Link>
-            <Link href="/students/new">
-              <Button variant="outline" className="w-full justify-start">
-                <User className="w-4 h-4 mr-2" />
-                Add New Student
-              </Button>
-            </Link>
+            {/* Admin-only actions */}
+            {(profile?.role === 'school_admin' || profile?.role === 'super_admin') && (
+              <>
+                <Link href="/classes/new">
+                  <Button variant="outline" className="w-full justify-start">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    Add New Class
+                  </Button>
+                </Link>
+                <Link href="/sections/new">
+                  <Button variant="outline" className="w-full justify-start">
+                    <Users className="w-4 h-4 mr-2" />
+                    Add New Section
+                  </Button>
+                </Link>
+                <Link href="/students/new">
+                  <Button variant="outline" className="w-full justify-start">
+                    <User className="w-4 h-4 mr-2" />
+                    Add New Student
+                  </Button>
+                </Link>
+                <Link href="/fees/assign">
+                  <Button variant="outline" className="w-full justify-start">
+                    <DollarSign className="w-4 h-4 mr-2" />
+                    Assign Fees
+                  </Button>
+                </Link>
+                <Link href="/announcements/new">
+                  <Button variant="outline" className="w-full justify-start">
+                    <Megaphone className="w-4 h-4 mr-2" />
+                    New Announcement
+                  </Button>
+                </Link>
+              </>
+            )}
+
+            {/* Available to all roles */}
             <Link href="/dashboard/attendance">
               <Button variant="outline" className="w-full justify-start">
                 <Calendar className="w-4 h-4 mr-2" />
                 Mark Attendance
-              </Button>
-            </Link>
-            <Link href="/fees/assign">
-              <Button variant="outline" className="w-full justify-start">
-                <DollarSign className="w-4 h-4 mr-2" />
-                Assign Fees
-              </Button>
-            </Link>
-            <Link href="/announcements/new">
-              <Button variant="outline" className="w-full justify-start">
-                <Megaphone className="w-4 h-4 mr-2" />
-                New Announcement
               </Button>
             </Link>
             <Link href="/messages/new">
