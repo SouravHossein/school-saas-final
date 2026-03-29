@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { LogOut, LayoutDashboard, BookOpen, Users, User, Calendar, DollarSign, PenTool, Megaphone, MessageCircle, Globe, BarChart3 } from 'lucide-react'
+import { LogOut, LayoutDashboard, BookOpen, Users, User, Calendar, DollarSign, PenTool, Megaphone, MessageCircle, Globe, BarChart3, Briefcase } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
@@ -126,6 +126,35 @@ export function AppSidebar() {
             icon={<DollarSign className="w-4 h-4" />}
             label="Payments"
             active={pathname.startsWith('/dashboard/payments')}
+          />
+        </div>
+
+        {/* HR & Payroll Section */}
+        <div className="pt-4 mt-4 border-t border-border">
+          <p className="px-2 mb-2 text-xs font-semibold text-muted-foreground uppercase">HR & Payroll</p>
+          <NavLink
+            href="/dashboard/hr/staff"
+            icon={<Briefcase className="w-4 h-4" />}
+            label="Staff"
+            active={pathname.startsWith('/dashboard/hr/staff')}
+          />
+          <NavLink
+            href="/dashboard/hr/salary-structures"
+            icon={<DollarSign className="w-4 h-4" />}
+            label="Salary Structures"
+            active={pathname.startsWith('/dashboard/hr/salary-structures')}
+          />
+          <NavLink
+            href="/dashboard/hr/payroll"
+            icon={<BarChart3 className="w-4 h-4" />}
+            label="Payroll"
+            active={pathname.startsWith('/dashboard/hr/payroll')}
+          />
+          <NavLink
+            href="/dashboard/hr/leaves"
+            icon={<Calendar className="w-4 h-4" />}
+            label="Leaves"
+            active={pathname.startsWith('/dashboard/hr/leaves')}
           />
         </div>
       </nav>
