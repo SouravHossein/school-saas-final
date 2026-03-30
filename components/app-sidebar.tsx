@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { LogOut, LayoutDashboard, BookOpen, Users, User, Calendar, DollarSign, PenTool, Megaphone, MessageCircle, Globe, BarChart3, Briefcase } from 'lucide-react'
+import { LogOut, LayoutDashboard, BookOpen, Users, User, Calendar, DollarSign, PenTool, Megaphone, MessageCircle, Globe, BarChart3, Briefcase, Settings } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
@@ -155,6 +155,17 @@ export function AppSidebar() {
             icon={<Calendar className="w-4 h-4" />}
             label="Leaves"
             active={pathname.startsWith('/dashboard/hr/leaves')}
+          />
+        </div>
+
+        {/* Settings Section */}
+        <div className="pt-4 mt-4 border-t border-border">
+          <p className="px-2 mb-2 text-xs font-semibold text-muted-foreground uppercase">Settings</p>
+          <NavLink
+            href="/dashboard/settings/roles"
+            icon={<Settings className="w-4 h-4" />}
+            label="Roles & Permissions"
+            active={pathname.startsWith('/dashboard/settings/roles')}
           />
         </div>
       </nav>
