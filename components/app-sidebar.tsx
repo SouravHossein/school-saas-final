@@ -168,6 +168,17 @@ export function AppSidebar() {
             active={pathname.startsWith('/dashboard/settings/roles')}
           />
         </div>
+
+        {/* Portal Section */}
+        <div className="pt-4 mt-4 border-t border-border">
+          <p className="px-2 mb-2 text-xs font-semibold text-muted-foreground uppercase">Portal</p>
+          <NavLink
+            href="/portal"
+            icon={<User className="w-4 h-4" />}
+            label="My Portal"
+            active={pathname.startsWith('/portal')}
+          />
+        </div>
       </nav>
 
       {/* Logout */}
