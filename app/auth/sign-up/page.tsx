@@ -45,19 +45,22 @@ export default function Page() {
     }
 
     try {
-      // Create school first
+      // Create school first (no RLS check on insert for anonymous users)
       const { data: schoolData, error: schoolError } = await supabase
         .from('schools')
         .insert({
-          name: schoolName,
+          name: schoolName || 'New School',
           subdomain: schoolSubdomain.toLowerCase().trim(),
         })
         .select('id')
         .single()
 
-      if (schoolError) throw schoolError
+      if (schoolError) {
+        console.error('[v0] School creation error:', schoolError)
+        throw new Error(`Failed to create school: ${schoolError.message}`)
+      }
 
-      // Sign up user
+      // Sign up user with school_id in metadata
       const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -67,11 +70,16 @@ export default function Page() {
             `${window.location.origin}/auth/callback`,
           data: {
             full_name: fullName,
-            school_id: schoolData.id,
+            school_id: schoolData?.id,
           },
         },
       })
-      if (signUpError) throw signUpError
+      
+      if (signUpError) {
+        console.error('[v0] Signup error:', signUpError)
+        throw new Error(`Failed to create account: ${signUpError.message}`)
+      }
+      
       router.push('/auth/sign-up-success')
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred')
