@@ -45,22 +45,8 @@ export default function Page() {
     }
 
     try {
-      // Create school first (no RLS check on insert for anonymous users)
-      const { data: schoolData, error: schoolError } = await supabase
-        .from('schools')
-        .insert({
-          name: schoolName || 'New School',
-          subdomain: schoolSubdomain.toLowerCase().trim(),
-        })
-        .select('id')
-        .single()
-
-      if (schoolError) {
-        console.error('[v0] School creation error:', schoolError)
-        throw new Error(`Failed to create school: ${schoolError.message}`)
-      }
-
-      // Sign up user with school_id in metadata
+      // Sign up user first with school info in metadata
+      // The profile trigger will create the profile and school in the database
       const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -70,7 +56,8 @@ export default function Page() {
             `${window.location.origin}/auth/callback`,
           data: {
             full_name: fullName,
-            school_id: schoolData?.id,
+            school_name: schoolName || 'New School',
+            school_subdomain: schoolSubdomain.toLowerCase().trim(),
           },
         },
       })
