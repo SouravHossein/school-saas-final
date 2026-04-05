@@ -9,7 +9,7 @@ export default function PublicLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-background text-foreground">
+      <body className="bg-background text-foreground antialiased">
         {children}
       </body>
     </html>

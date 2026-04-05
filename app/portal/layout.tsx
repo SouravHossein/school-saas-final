@@ -28,16 +28,19 @@ export default async function PortalLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Portal Header */}
-      <header className="border-b bg-card sticky top-0 z-40">
-        <div className="container mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,rgba(74,117,255,0.12),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(34,165,141,0.12),transparent_26%)]" />
+      <header className="sticky top-0 z-40 border-b border-white/45 bg-background/72 backdrop-blur-xl">
+        <div className="container mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
           <div>
-            <Link href="/portal" className="font-bold text-xl">
+            <Link href="/portal" className="font-display text-2xl font-semibold text-foreground">
               School Portal
             </Link>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Student and parent access, styled with the same design language.
+            </p>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user.email}</span>
+            <span className="hidden text-sm text-muted-foreground md:inline">{user.email}</span>
             <form action={handleLogout}>
               <Button type="submit" variant="outline" size="sm">
                 <LogOut className="w-4 h-4 mr-2" />
@@ -48,9 +51,10 @@ export default async function PortalLayout({
         </div>
       </header>
 
-      {/* Portal Content */}
-      <main className="container mx-auto max-w-7xl px-4 py-8">
-        {children}
+      <main className="container relative mx-auto max-w-7xl px-4 py-8">
+        <div className="page-shell">
+          {children}
+        </div>
       </main>
     </div>
   )

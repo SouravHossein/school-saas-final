@@ -1,8 +1,11 @@
-import { createClient } from '@/lib/supabase/server'
-import { getSchoolFromRequest } from '@/lib/multitenant'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { headers } from 'next/headers'
+import { ArrowRight, CalendarDays, GraduationCap, Sparkles, Users } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { createClient } from '@/lib/supabase/server'
+import { generateThemeCSS, parseThemeConfig } from '@/lib/theme-engine'
+import { getSchoolFromRequest } from '@/lib/multitenant'
 
 export default async function PublicHomePage() {
   const headerList = await headers()
@@ -10,17 +13,17 @@ export default async function PublicHomePage() {
 
   if (!school) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Welcome</h1>
-          <p className="text-gray-600">School not found</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="section-shell text-center">
+          <h1 className="text-4xl font-semibold">School not found</h1>
+          <p className="mt-3 text-muted-foreground">Check the domain or subdomain and try again.</p>
         </div>
       </div>
     )
   }
 
   const supabase = await createClient()
-  
+
   const { data: events } = await supabase
     .from('events')
     .select('*')
@@ -36,136 +39,174 @@ export default async function PublicHomePage() {
     .eq('is_visible', true)
     .limit(6)
 
-  const themeConfig = school.theme_config || {}
-  const homepageConfig = school.homepage_config || {}
+  const theme = parseThemeConfig(school.theme_config)
+  const homepageConfig = {
+    title: 'Welcome to School',
+    description: 'Leading education institution',
+    showHero: true,
+    showEvents: true,
+    showTeachers: true,
+    ...school.homepage_config,
+  }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-white border-b">
-        <div className="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-          {school.logo_url && (
-            <img src={school.logo_url} alt={school.name} className="h-12 object-contain" />
-          )}
-          <h1 className="text-3xl font-bold" style={{ color: themeConfig.primary }}>
-            {school.name}
-          </h1>
-          <div className="space-x-4">
-            <Link href="/dashboard">
-              <Button variant="outline">Admin Login</Button>
-            </Link>
-          </div>
+    <div className="min-h-screen">
+      <style>{generateThemeCSS(theme)}</style>
+
+      <header className="sticky top-0 z-40 border-b border-white/40 bg-white/72 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6">
+          <Link href="/" className="flex items-center gap-3">
+            {school.logo_url ? (
+              <img src={school.logo_url} alt={school.name} className="h-12 w-12 rounded-2xl object-cover" />
+            ) : (
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-white shadow-[0_18px_36px_-18px_rgba(74,117,255,0.75)]">
+                <GraduationCap className="h-5 w-5" />
+              </div>
+            )}
+            <div>
+              <h1 className="font-display text-xl font-semibold">{school.name}</h1>
+              <p className="text-xs uppercase tracking-[0.22em] text-muted">Public Website</p>
+            </div>
+          </Link>
+
+          <Button asChild variant="outline">
+            <Link href="/dashboard">Admin Login</Link>
+          </Button>
         </div>
       </header>
 
-      {/* Hero Section */}
-      {homepageConfig.showHero && (
-        <section className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-20 px-4">
-          <div className="max-w-6xl mx-auto text-center">
-            <h2 className="text-5xl font-bold mb-4">{homepageConfig.title}</h2>
-            <p className="text-xl mb-8 opacity-90">{homepageConfig.description}</p>
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-              Learn More
-            </Button>
-          </div>
-        </section>
-      )}
-
-      {/* Events Section */}
-      {homepageConfig.showEvents && events && events.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 py-16">
-          <h2 className="text-4xl font-bold mb-8" style={{ color: themeConfig.primary }}>
-            Upcoming Events
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {events.map((event: any) => (
-              <div key={event.id} className="bg-white rounded-lg shadow-md p-6">
-                {event.image_url && (
-                  <img 
-                    src={event.image_url} 
-                    alt={event.title}
-                    className="w-full h-48 object-cover rounded-lg mb-4"
-                  />
-                )}
-                <h3 className="text-xl font-bold mb-2">{event.title}</h3>
-                <p className="text-gray-600 mb-4">{event.description}</p>
-                <p className="text-sm text-gray-500">
-                  {new Date(event.event_date).toLocaleDateString()}
-                </p>
+      <main className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-6 md:px-6 md:py-10">
+        {homepageConfig.showHero && (
+          <section className="public-hero grid-pattern overflow-hidden rounded-[2rem] border border-white/45 px-6 py-12 shadow-[0_30px_90px_-40px_rgba(15,23,42,0.45)] md:px-8 md:py-16">
+            <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+              <div className="space-y-6">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-4 py-2 text-sm font-medium text-foreground">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  Distinctly branded for {school.name}
+                </div>
+                <div className="space-y-4">
+                  <h2 className="text-5xl font-semibold tracking-[-0.05em] md:text-6xl">
+                    {homepageConfig.title}
+                  </h2>
+                  <p className="max-w-2xl text-lg leading-8 text-muted">
+                    {homepageConfig.description}
+                  </p>
+                </div>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Button size="lg" asChild>
+                    <Link href="/public/events">
+                      Explore Events
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="outline" asChild>
+                    <Link href="/dashboard">Admin Login</Link>
+                  </Button>
+                </div>
               </div>
-            ))}
-          </div>
-        </section>
-      )}
 
-      {/* Teachers Section */}
-      {homepageConfig.showTeachers && teachers && teachers.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 py-16 bg-gray-50 rounded-lg">
-          <h2 className="text-4xl font-bold mb-8" style={{ color: themeConfig.primary }}>
-            Our Faculty
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {teachers.map((teacher: any) => (
-              <div key={teacher.id} className="bg-white rounded-lg shadow-md p-6 text-center">
-                {teacher.photo_url && (
-                  <img 
-                    src={teacher.photo_url} 
-                    alt={teacher.full_name}
-                    className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-                  />
-                )}
-                <h3 className="text-lg font-bold">{teacher.full_name}</h3>
-                {teacher.subject && <p className="text-gray-600">{teacher.subject}</p>}
-                {teacher.qualification && (
-                  <p className="text-sm text-gray-500 mt-2">{teacher.qualification}</p>
-                )}
-                {teacher.bio && (
-                  <p className="text-gray-600 text-sm mt-4">{teacher.bio}</p>
-                )}
+              <div className="public-shell-card grid gap-4 p-5 md:p-6">
+                <div className="rounded-[1.5rem] bg-slate-950 px-5 py-5 text-white">
+                  <p className="text-sm uppercase tracking-[0.22em] text-white/60">School profile</p>
+                  <p className="mt-3 text-3xl font-semibold">{school.name}</p>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <PublicInfo label="Branding" value="Custom theme ready" />
+                  <PublicInfo label="Events" value={`${events?.length || 0} featured items`} />
+                  <PublicInfo label="Faculty" value={`${teachers?.length || 0} visible profiles`} />
+                  <PublicInfo label="Experience" value="Responsive website" />
+                </div>
               </div>
-            ))}
-          </div>
-        </section>
-      )}
+            </div>
+          </section>
+        )}
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 px-4 mt-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <h4 className="font-bold mb-4">About</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/about">About Us</Link></li>
-                <li><Link href="/mission">Our Mission</Link></li>
-              </ul>
+        {homepageConfig.showEvents && events && events.length > 0 && (
+          <section className="public-shell-card p-6 md:p-8">
+            <div className="mb-8 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Upcoming</p>
+                <h2 className="mt-2 text-4xl font-semibold">Events</h2>
+              </div>
+              <Button asChild variant="outline">
+                <Link href="/public/events">View all</Link>
+              </Button>
             </div>
-            <div>
-              <h4 className="font-bold mb-4">Academics</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/programs">Programs</Link></li>
-                <li><Link href="/admissions">Admissions</Link></li>
-              </ul>
+
+            <div className="grid gap-6 md:grid-cols-3">
+              {events.map((event: any) => (
+                <article key={event.id} className="overflow-hidden rounded-[1.6rem] border border-white/55 bg-white/74">
+                  {event.image_url && (
+                    <img
+                      src={event.image_url}
+                      alt={event.title}
+                      className="h-52 w-full object-cover"
+                    />
+                  )}
+                  <div className="space-y-4 p-5">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+                      <CalendarDays className="h-3.5 w-3.5" />
+                      {new Date(event.event_date).toLocaleDateString()}
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-semibold">{event.title}</h3>
+                      <p className="mt-2 text-sm leading-7 text-muted">{event.description}</p>
+                    </div>
+                  </div>
+                </article>
+              ))}
             </div>
-            <div>
-              <h4 className="font-bold mb-4">Resources</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/events">Events</Link></li>
-                <li><Link href="/news">News</Link></li>
-              </ul>
+          </section>
+        )}
+
+        {homepageConfig.showTeachers && teachers && teachers.length > 0 && (
+          <section className="public-shell-card p-6 md:p-8">
+            <div className="mb-8">
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Faculty</p>
+              <h2 className="mt-2 text-4xl font-semibold">Meet Our Educators</h2>
             </div>
-            <div>
-              <h4 className="font-bold mb-4">Contact</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/contact">Contact Us</Link></li>
-                <li><Link href="/careers">Careers</Link></li>
-              </ul>
+
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {teachers.map((teacher: any) => (
+                <article key={teacher.id} className="rounded-[1.6rem] border border-white/55 bg-white/74 p-5">
+                  <div className="flex items-start gap-4">
+                    {teacher.photo_url ? (
+                      <img
+                        src={teacher.photo_url}
+                        alt={teacher.full_name}
+                        className="h-20 w-20 rounded-[1.4rem] object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-20 w-20 items-center justify-center rounded-[1.4rem] bg-primary/10 text-primary">
+                        <Users className="h-8 w-8" />
+                      </div>
+                    )}
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-semibold">{teacher.full_name}</h3>
+                      {teacher.subject && <p className="text-sm text-muted">{teacher.subject}</p>}
+                      {teacher.qualification && (
+                        <p className="text-sm text-muted">{teacher.qualification}</p>
+                      )}
+                    </div>
+                  </div>
+                  {teacher.bio && (
+                    <p className="mt-4 text-sm leading-7 text-muted">{teacher.bio}</p>
+                  )}
+                </article>
+              ))}
             </div>
-          </div>
-          <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 {school.name}. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+          </section>
+        )}
+      </main>
+    </div>
+  )
+}
+
+function PublicInfo({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[1.2rem] border border-white/45 bg-white/75 px-4 py-4">
+      <p className="text-xs uppercase tracking-[0.22em] text-muted">{label}</p>
+      <p className="mt-2 font-medium text-foreground">{value}</p>
     </div>
   )
 }
