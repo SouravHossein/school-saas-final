@@ -13,6 +13,8 @@ import {
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { Loader2, Megaphone, Pencil, Trash2 } from 'lucide-react'
+import { AppPageHeader } from '@/components/app-page-header'
+import { AppEmptyState } from '@/components/app-empty-state'
 
 interface Announcement {
   id: string
@@ -104,23 +106,24 @@ export default function AnnouncementsPage() {
   }
 
   return (
-    <div className="space-y-6 p-6 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Megaphone className="w-8 h-8" />
-            Announcements
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            School-wide announcements and updates
-          </p>
+    <div className="mx-auto max-w-5xl space-y-6">
+      <AppPageHeader
+        eyebrow="Communication"
+        title="Announcements"
+        description="Publish school-wide updates with clearer visibility into audience, timing, and urgency."
+        actions={
+          isAdmin ? (
+            <Button asChild size="lg">
+              <Link href="/announcements/new">New Announcement</Link>
+            </Button>
+          ) : null
+        }
+      >
+        <div className="rounded-[1.4rem] border border-white/55 bg-white/74 px-4 py-4">
+          <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Published items</p>
+          <p className="mt-2 text-3xl font-semibold text-foreground">{announcements.length}</p>
         </div>
-        {isAdmin && (
-          <Link href="/announcements/new">
-            <Button>New Announcement</Button>
-          </Link>
-        )}
-      </div>
+      </AppPageHeader>
 
       {error && (
         <Card className="border-red-200 bg-red-50">
@@ -129,15 +132,22 @@ export default function AnnouncementsPage() {
       )}
 
       {announcements.length === 0 ? (
-        <Card>
-          <CardContent className="pt-6 text-center text-muted-foreground">
-            No announcements yet
-          </CardContent>
-        </Card>
+        <AppEmptyState
+          icon={<Megaphone className="h-6 w-6" />}
+          title="No announcements yet"
+          description="Use announcements to share timely updates with staff, students, parents, or the whole school."
+          action={
+            isAdmin ? (
+              <Button asChild>
+                <Link href="/announcements/new">Create announcement</Link>
+              </Button>
+            ) : null
+          }
+        />
       ) : (
         <div className="space-y-4">
           {announcements.map((announcement) => (
-            <Card key={announcement.id}>
+            <Card key={announcement.id} className="surface-card">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

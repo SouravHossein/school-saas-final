@@ -29,7 +29,10 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Search, Users } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { AppPageHeader } from '@/components/app-page-header'
+import { AppEmptyState } from '@/components/app-empty-state'
 
 interface Student {
   id: string
@@ -130,20 +133,32 @@ export default function StudentsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Students</h1>
-          <p className="text-muted-foreground">Manage student profiles and records</p>
-        </div>
-        <Link href="/students/new">
-          <Button className="gap-2">
-            <Plus className="w-4 h-4" />
-            Add Student
+      <AppPageHeader
+        eyebrow="Students"
+        title="Students"
+        description="Manage student profiles, enrollment records, and class placement with improved filtering and stronger page structure."
+        actions={
+          <Button asChild size="lg" className="gap-2">
+            <Link href="/students/new">
+              <Plus className="w-4 h-4" />
+              Add Student
+            </Link>
           </Button>
-        </Link>
-      </div>
+        }
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="rounded-[1.4rem] border border-white/55 bg-white/74 px-4 py-4">
+            <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Students</p>
+            <p className="mt-2 text-3xl font-semibold text-foreground">{students.length}</p>
+          </div>
+          <div className="rounded-[1.4rem] border border-white/55 bg-white/74 px-4 py-4">
+            <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Filtered</p>
+            <p className="mt-2 text-3xl font-semibold text-foreground">{filteredStudents.length}</p>
+          </div>
+        </div>
+      </AppPageHeader>
 
-      <Card>
+      <Card className="surface-card">
         <CardHeader>
           <CardTitle>Student List</CardTitle>
           <CardDescription>
@@ -181,7 +196,7 @@ export default function StudentsPage() {
 
           {/* Table */}
           {filteredStudents.length > 0 ? (
-            <div className="border rounded-lg overflow-x-auto">
+            <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -224,17 +239,18 @@ export default function StudentsPage() {
                       <TableCell className="text-sm">{student.email || '—'}</TableCell>
                       <TableCell>{student.phone || '—'}</TableCell>
                       <TableCell>
-                        <span
-                          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                        <Badge
+                          variant={
                             student.status === 'active'
-                              ? 'bg-green-50 text-green-700'
+                              ? 'default'
                               : student.status === 'inactive'
-                                ? 'bg-gray-50 text-gray-700'
-                                : 'bg-blue-50 text-blue-700'
-                          }`}
+                                ? 'secondary'
+                                : 'outline'
+                          }
+                          className="capitalize"
                         >
                           {student.status}
-                        </span>
+                        </Badge>
                       </TableCell>
                       <TableCell>
                         <Link href={`/students/${student.id}`}>
@@ -249,14 +265,22 @@ export default function StudentsPage() {
               </Table>
             </div>
           ) : (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">No students found</p>
-              <Link href="/students/new">
-                <Button variant="outline" className="mt-4">
-                  Add First Student
-                </Button>
-              </Link>
-            </div>
+            <AppEmptyState
+              icon={<Users className="h-6 w-6" />}
+              title={searchQuery || selectedSection ? 'No students match these filters' : 'No students yet'}
+              description={
+                searchQuery || selectedSection
+                  ? 'Try adjusting the search or section filter to find the student record you need.'
+                  : 'Create the first student profile to start tracking enrollment, attendance, and fees.'
+              }
+              action={
+                !searchQuery && !selectedSection ? (
+                  <Button asChild variant="outline">
+                    <Link href="/students/new">Add first student</Link>
+                  </Button>
+                ) : null
+              }
+            />
           )}
         </CardContent>
       </Card>

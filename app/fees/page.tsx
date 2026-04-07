@@ -20,7 +20,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { AlertCircle, Edit2, Trash2, Plus } from 'lucide-react'
+import { AlertCircle, CreditCard, Edit2, Plus, Trash2 } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   AlertDialog,
@@ -31,6 +31,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { AppPageHeader } from '@/components/app-page-header'
+import { AppEmptyState } from '@/components/app-empty-state'
 
 interface FeeStructure {
   id: string
@@ -99,18 +101,24 @@ export default function FeesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Fee Structures</h1>
-          <p className="text-muted-foreground">Manage school fee structures and types</p>
-        </div>
-        <Link href="/fees/new">
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Add Fee Structure
+      <AppPageHeader
+        eyebrow="Finance"
+        title="Fee Structures"
+        description="Define how your school charges tuition, recurring fees, and one-time payments with a cleaner management view."
+        actions={
+          <Button asChild size="lg">
+            <Link href="/fees/new">
+              <Plus className="h-4 w-4" />
+              Add Fee Structure
+            </Link>
           </Button>
-        </Link>
-      </div>
+        }
+      >
+        <div className="rounded-[1.4rem] border border-white/55 bg-white/74 px-4 py-4">
+          <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Configured fees</p>
+          <p className="mt-2 text-3xl font-semibold text-foreground">{feeStructures.length}</p>
+        </div>
+      </AppPageHeader>
 
       {error && (
         <Alert variant="destructive">
@@ -119,7 +127,7 @@ export default function FeesPage() {
         </Alert>
       )}
 
-      <Card>
+      <Card className="surface-card">
         <CardHeader>
           <CardTitle>Fee Structures</CardTitle>
           <CardDescription>
@@ -130,16 +138,18 @@ export default function FeesPage() {
           {loading ? (
             <p className="text-center text-muted-foreground py-8">Loading...</p>
           ) : feeStructures.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground mb-4">
-                No fee structures created yet
-              </p>
-              <Link href="/fees/new">
-                <Button variant="outline">Create First Fee Structure</Button>
-              </Link>
-            </div>
+            <AppEmptyState
+              icon={<CreditCard className="h-6 w-6" />}
+              title="No fee structures created yet"
+              description="Add the first fee structure so billing and assignment flows have a foundation to work from."
+              action={
+                <Button asChild variant="outline">
+                  <Link href="/fees/new">Create first fee structure</Link>
+                </Button>
+              }
+            />
           ) : (
-            <div className="overflow-x-auto">
+            <div className="rounded-[1.4rem] bg-transparent">
               <Table>
                 <TableHeader>
                   <TableRow>
