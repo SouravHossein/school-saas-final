@@ -1,5 +1,7 @@
 'use client'
 
+'use client'
+
 import { useEffect, useState } from 'react'
 
 export function SafeAreaPadding() {
@@ -53,3 +55,4 @@ export function NotchPadding() {
     `}</style>
   )
 }
+
