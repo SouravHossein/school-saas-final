@@ -1,8 +1,14 @@
+'use client'
+
 import { AlertCircle, Home, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
 export default function OfflinePage() {
+  const handleRetry = () => {
+    window.location.reload()
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
       <div className="max-w-md w-full text-center space-y-6">
@@ -33,7 +39,7 @@ export default function OfflinePage() {
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => window.location.reload()}
+            onClick={handleRetry}
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             Retry Connection
@@ -47,3 +53,4 @@ export default function OfflinePage() {
     </div>
   )
 }
+
