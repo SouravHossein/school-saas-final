@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { LogOut } from 'lucide-react'
 import Link from 'next/link'
+import { BottomNavigation } from '@/components/bottom-navigation'
 
 export default async function PortalLayout({
   children,
@@ -35,7 +36,7 @@ export default async function PortalLayout({
             <Link href="/portal" className="font-display text-2xl font-semibold text-foreground">
               School Portal
             </Link>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground hidden md:block">
               Student and parent access, styled with the same design language.
             </p>
           </div>
@@ -51,11 +52,13 @@ export default async function PortalLayout({
         </div>
       </header>
 
-      <main className="container relative mx-auto max-w-7xl px-4 py-8">
+      <main className="container relative mx-auto max-w-7xl px-4 py-8 pb-24 md:pb-8">
         <div className="page-shell">
           {children}
         </div>
       </main>
+
+      <BottomNavigation />
     </div>
   )
 }

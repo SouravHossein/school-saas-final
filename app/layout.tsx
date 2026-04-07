@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import {
   Fraunces,
   Geist_Mono,
@@ -8,6 +8,9 @@ import {
 } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
+import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
+import { OfflineStatus } from '@/components/offline-status'
+import { NotchPadding } from '@/components/safe-area'
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -34,6 +37,7 @@ export const metadata: Metadata = {
   title: 'School Management System',
   description: 'Multi-tenant school management platform for managing classes, sections, and students',
   generator: 'v0.app',
+  manifest: '/manifest.json',
   icons: {
     icon: [
       {
@@ -53,6 +57,18 @@ export const metadata: Metadata = {
   },
 }
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
+  ],
+  viewportFit: 'cover',
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -60,12 +76,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
+      <head>
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="SchoolMS" />
+        <meta name="msapplication-TileColor" content="#0066cc" />
+        <meta name="msapplication-config" content="/browserconfig.xml" />
+        <meta name="viewport" content="viewport-fit=cover" />
+        <NotchPadding />
+      </head>
       <body
         className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} ${fraunces.variable} ${manrope.variable} ${_geistMono.variable} font-sans antialiased`}
       >
+        <OfflineStatus />
+        <PWAInstallPrompt />
         {children}
         <Analytics />
       </body>
     </html>
   )
 }
+
