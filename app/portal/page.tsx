@@ -32,9 +32,9 @@ export default async function PortalHomePage() {
     .maybeSingle()
 
   const { data: parentRecord } = await supabase
-    .from('student_guardians')
+    .from('guardians')
     .select('id')
-    .eq('guardian_id', user.id)
+    .eq('user_id', user.id)
     .maybeSingle()
 
   const isStudent = !!studentRecord
