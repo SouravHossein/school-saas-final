@@ -1,7 +1,5 @@
-'use client'
-
+import dynamic from 'next/dynamic'
 import { Suspense } from 'react'
-import { RolesPageContent } from './roles-content'
 
 function RolesSkeleton() {
   return (
@@ -18,6 +16,13 @@ function RolesSkeleton() {
     </div>
   )
 }
+
+const RolesPageContent = dynamic(() => import('./roles-content').then(mod => ({ default: mod.RolesPageContent })), {
+  loading: () => <RolesSkeleton />,
+  ssr: false,
+})
+
+export const dynamic = 'force-dynamic'
 
 export default function RolesPage() {
   return (
