@@ -1,0 +1,25 @@
+-- This script sets up Supabase Storage buckets and policies for student photos
+-- Note: Storage bucket creation must be done through Supabase dashboard or SDK
+-- This file documents the expected bucket structure and RLS policies
+
+-- Expected bucket: student-photos (private)
+-- Bucket structure: school_id/student_id/filename
+
+-- RLS Policy for student-photos bucket (authenticated users can upload/view/delete their school's student photos)
+-- This needs to be set up in Supabase dashboard or via SDK:
+-- 
+-- Policy: "Users can upload student photos for their school"
+-- For: INSERT, UPDATE
+-- Target: student-photos bucket
+-- MIME type: image/*
+-- Check: bucket_id = 'student-photos' AND (auth.uid() -> school_id matches profile's school)
+--
+-- Policy: "Users can view student photos from their school"
+-- For: SELECT
+-- Target: student-photos bucket
+-- Check: bucket_id = 'student-photos' AND (object.name starts with auth user's school_id)
+--
+-- Policy: "School admins can delete student photos"
+-- For: DELETE
+-- Target: student-photos bucket
+-- Check: bucket_id = 'student-photos' AND (auth.uid() has school_admin role in that school)

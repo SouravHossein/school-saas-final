@@ -1,14 +1,38 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import {
+  Fraunces,
+  Geist_Mono,
+  Manrope,
+  Plus_Jakarta_Sans,
+  Space_Grotesk,
+} from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-plus-jakarta',
+})
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space-grotesk',
+})
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-fraunces',
+})
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-manrope',
+})
+const _geistMono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-geist-mono',
+})
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'School Management System',
+  description: 'Multi-tenant school management platform for managing classes, sections, and students',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -35,8 +59,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className="font-sans antialiased">
+    <html lang="en" data-scroll-behavior="smooth">
+      <body
+        className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} ${fraunces.variable} ${manrope.variable} ${_geistMono.variable} font-sans antialiased`}
+      >
         {children}
         <Analytics />
       </body>

@@ -1,6 +1,10 @@
 'use client'
 
-import { createClient } from '@/lib/supabase/client'
+import Link from 'next/link'
+import { ArrowRight, Building2, Palette, ShieldCheck } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -11,9 +15,25 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+
+const launchBenefits = [
+  {
+    icon: Building2,
+    title: 'Launch a full school workspace',
+    description: 'Set up academics, communication, and finance under one account.',
+  },
+  {
+    icon: Palette,
+    title: 'Make the experience yours',
+    description: 'Customize branding, website styling, and the overall visual feel.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Start with secure structure',
+    description: 'Your school data stays isolated with multi-tenant separation.',
+  },
+]
 
 export default function Page() {
   const [fullName, setFullName] = useState('')
@@ -45,19 +65,6 @@ export default function Page() {
     }
 
     try {
-      // Create school first
-      const { data: schoolData, error: schoolError } = await supabase
-        .from('schools')
-        .insert({
-          name: schoolName,
-          subdomain: schoolSubdomain.toLowerCase().trim(),
-        })
-        .select('id')
-        .single()
-
-      if (schoolError) throw schoolError
-
-      // Sign up user
       const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -67,11 +74,17 @@ export default function Page() {
             `${window.location.origin}/auth/callback`,
           data: {
             full_name: fullName,
-            school_id: schoolData.id,
+            school_name: schoolName || 'New School',
+            school_subdomain: schoolSubdomain.toLowerCase().trim(),
           },
         },
       })
-      if (signUpError) throw signUpError
+
+      if (signUpError) {
+        console.error('[v0] Signup error:', signUpError)
+        throw new Error(`Failed to create account: ${signUpError.message}`)
+      }
+
       router.push('/auth/sign-up-success')
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred')
@@ -81,17 +94,58 @@ export default function Page() {
   }
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <div className="flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">Sign up</CardTitle>
-              <CardDescription>Create a new school account</CardDescription>
+    <div className="min-h-svh px-6 py-8 md:px-10">
+      <div className="mx-auto grid min-h-[calc(100svh-4rem)] max-w-7xl gap-6 lg:grid-cols-[0.92fr_1.08fr]">
+        <section className="section-shell flex flex-col justify-between">
+          <div>
+            <div className="inline-flex items-center rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-primary">
+              Create your school
+            </div>
+            <h1 className="mt-8 max-w-md text-5xl font-semibold tracking-[-0.05em] text-foreground">
+              Start with a branded platform your team will actually enjoy using.
+            </h1>
+            <p className="mt-5 max-w-lg text-lg leading-8 text-muted-foreground">
+              Create your administrator account, reserve your subdomain, and unlock a polished school operations workspace in minutes.
+            </p>
+          </div>
+
+          <div className="mt-10 space-y-4">
+            {launchBenefits.map((item) => {
+              const Icon = item.icon
+
+              return (
+                <div
+                  key={item.title}
+                  className="rounded-[1.35rem] border border-white/55 bg-white/70 p-5"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold">{item.title}</h2>
+                      <p className="mt-1 text-sm leading-7 text-muted-foreground">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </section>
+
+        <section className="flex items-center justify-center">
+          <Card className="w-full max-w-2xl border-white/65 bg-white/82">
+            <CardHeader className="space-y-3">
+              <CardTitle className="text-3xl">Sign up</CardTitle>
+              <CardDescription className="text-base leading-7">
+                Create your school administrator account and reserve your branded workspace.
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSignUp}>
-                <div className="flex flex-col gap-6">
+              <form onSubmit={handleSignUp} className="space-y-6">
+                <div className="grid gap-6 md:grid-cols-2">
                   <div className="grid gap-2">
                     <Label htmlFor="fullname">Full Name</Label>
                     <Input
@@ -156,16 +210,24 @@ export default function Page() {
                       onChange={(e) => setRepeatPassword(e.target.value)}
                     />
                   </div>
-                  {error && <p className="text-sm text-red-500">{error}</p>}
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Creating account...' : 'Sign up'}
-                  </Button>
                 </div>
-                <div className="mt-4 text-center text-sm">
+
+                {error && (
+                  <div className="rounded-2xl border border-destructive/15 bg-destructive/8 px-4 py-3 text-sm text-destructive">
+                    {error}
+                  </div>
+                )}
+
+                <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
+                  {isLoading ? 'Creating account...' : 'Create School Account'}
+                  {!isLoading && <ArrowRight className="h-4 w-4" />}
+                </Button>
+
+                <div className="text-center text-sm text-muted-foreground">
                   Already have an account?{' '}
                   <Link
                     href="/auth/login"
-                    className="underline underline-offset-4"
+                    className="font-semibold text-primary underline-offset-4 hover:underline"
                   >
                     Login
                   </Link>
@@ -173,7 +235,7 @@ export default function Page() {
               </form>
             </CardContent>
           </Card>
-        </div>
+        </section>
       </div>
     </div>
   )
